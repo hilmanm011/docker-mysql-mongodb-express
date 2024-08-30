@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  app:
+    # build: .
+    # container_name: express_app
+    # ports:
+    #   - "4000:3000"
+    # depends_on:
+    #   - mysql
+    #   - mongodb
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=development
+      - PORT=4000
+      - BASE_API=http://localhost:4000/
+      - DB_DIALECT=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3308
+      - DB_DATABASE=mpdb
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      # - DB_POOL_MAX=5
+      # - DB_POOL_MIN=0
+      # - DB_POOL_ACQUIRE=30000
+      # - DB_POOL_IDLE=10000
+      # - DB_TIME_ZONE=+00:00
+    depends_on:
+      - mysql
+      - mongodb
+    # environment:
+    #   - MYSQL_HOST=mysql
+    #   - MYSQL_USER=root
+    #   - MYSQL_PASSWORD=root
+    #   - MYSQL_DATABASE=mpdb
+    volumes:
+      - .:/app
+    command: sh -c "npm install && node app.js"
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mpdb
+      MYSQL_USER: root
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mysql-data:
+  mongo-data:
